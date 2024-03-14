@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int          @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  headline    String?
+  
+  experiences Experience[]
+  educations  Education[]
+  skills      Skill[]
+
+  locationId  Int?
+  location    Location?    @relation(fields: [locationId], references: [id])
+  
+  aboutId     Int?
+  about       About?       @relation(fields: [aboutId], references: [id])
+}
+
+model Location {
+  id      Int    @id @default(autoincrement())
+  city    String
+  state   String
+  country String
+  users   User[]
+}
+
+model About {
+  id    Int    @id @default(autoincrement())
+  about String
+  users User[]
+}
+
+// Define Experience model
+enum LocationType {
+  ONSITE
+  HYBRID
+  REMOTE
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  SELF_EMPLOYED
+  FREELANCE
+  INTERNSHIP
+  TRAINEE
+}
+
+enum MonthType {
+  JANUARY
+  FEBRUARY
+  MARCH
+  APRIL
+  MAY
+  JUNE
+  JULY
+  AUGUST
+  SEPTEMBER
+  OCTOBER
+  NOVEMBER
+  DECEMBER
+  PRESENT
+}
+
+model Experience {
+  id             Int            @id @default(autoincrement())
+  title          String
+  employmentType EmploymentType
+  companyName    String
+  location       String
+  locationType   LocationType
+  startMonth     MonthType
+  startYear      Int
+  endMonth       MonthType?
+  endYear        Int
+  description    String?
+  User           User?          @relation(fields: [userId], references: [id])
+  userId         Int?
+}
+
+// Define Education model
+model Education {
+  id           Int     @id @default(autoincrement())
+  school       String
+  degree       String
+  fieldOfStudy String
+  startMonth   MonthType
+  startYear    Int
+  endMonth     MonthType?
+  endYear      Int?
+  description  String
+  grade        String
+
+  user   User? @relation(fields: [userId], references: [id])
+  userId Int?
+}
+
+model Skill {
+  id    Int    @id @default(autoincrement())
+  name  String
+  users User[]
+}
